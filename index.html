@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌍 Hello World — 20 Languages</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Cinzel:wght@700&family=Dancing+Script:wght@700&family=Fira+Sans:ital,wght@1,900&family=Fredoka+One&family=Great+Vibes&family=Ma+Shan+Zheng&family=Monoton&family=Noto+Naskh+Arabic:wght@700&family=Noto+Sans+JP:wght@900&family=Noto+Sans+KR:wght@900&family=Noto+Sans+SC:wght@900&family=Noto+Sans+TC:wght@900&family=Noto+Sans+Thai:wght@700&family=Noto+Serif+Devanagari:wght@700&family=Noto+Serif+Hebrew:wght@700&family=Orbitron:wght@900&family=Playfair+Display:ital,wght@1,900&family=Righteous&family=Rubik+Bubbles&family=Rubik+Glitch&family=Silkscreen:wght@700&family=Uncial+Antiqua&display=swap" rel="stylesheet">
+<style>
+/* ===== Reset & Base ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  background: #0a0a1a;
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(72, 50, 180, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, rgba(255, 100, 80, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(50, 200, 180, 0.10) 0%, transparent 50%);
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #fff;
+  padding: 2rem 1.5rem;
+}
+
+/* ===== Header ===== */
+header {
+  text-align: center;
+  padding: 3rem 1rem 4rem;
+}
+
+header h1 {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.8rem, 5vw, 3.5rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, #f093fb, #f5576c, #4facfe, #43e97b);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 6s ease infinite;
+  letter-spacing: 0.05em;
+}
+
+header p {
+  margin-top: 0.8rem;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.95rem;
+  letter-spacing: 0.3em;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ===== Grid ===== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.card {
+  position: relative;
+  border-radius: 1.25rem;
+  padding: 2rem 1.5rem;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.card:hover {
+  transform: translateY(-6px) scale(1.02);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.greeting {
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  line-height: 1.3;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.lang-label {
+  margin-top: 0.6rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  opacity: 0.7;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== Individual Card Styles ===== */
+
+/* 1. 中文 — 毛笔书法 */
+.card-1 {
+  background: linear-gradient(145deg, #1a1a2e, #16213e);
+  border: 1px solid rgba(255,200,100,0.2);
+}
+.card-1 .greeting {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 3.2rem;
+  color: #f5d0a0;
+  text-shadow: 0 0 30px rgba(245,208,160,0.3), 2px 2px 0 rgba(0,0,0,0.3);
+}
+.card-1:hover { box-shadow: 0 12px 40px rgba(245,208,160,0.15); }
+
+/* 2. English — 霓虹渐变 */
+.card-2 {
+  background: linear-gradient(145deg, #0f0c29, #302b63, #24243e);
+  border: 1px solid rgba(79,172,254,0.3);
+}
+.card-2 .greeting {
+  font-family: 'Orbitron', monospace;
+  font-size: 2.2rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #43e97b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(79,172,254,0.4));
+}
+.card-2:hover { box-shadow: 0 12px 40px rgba(79,172,254,0.2); }
+
+/* 3. 日本語 — 和风优雅 */
+.card-3 {
+  background: linear-gradient(145deg, #1a1a2e, #2d1b3a);
+  border: 1px solid rgba(255,150,200,0.2);
+}
+.card-3 .greeting {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 900;
+  color: #f8c8dc;
+  text-shadow: 0 0 20px rgba(248,200,220,0.3);
+  letter-spacing: 0.15em;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 2rem;
+}
+.card-3:hover { box-shadow: 0 12px 40px rgba(248,200,220,0.15); }
+
+/* 4. 한국어 — 彩色弹力 */
+.card-4 {
+  background: linear-gradient(145deg, #1a1a3e, #2d1b4e);
+  border: 1px solid rgba(150,200,255,0.2);
+}
+.card-4 .greeting {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 900;
+  font-size: 2rem;
+  background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: hueRotate 4s linear infinite;
+}
+@keyframes hueRotate { to { filter: hue-rotate(360deg); } }
+.card-4:hover { box-shadow: 0 12px 40px rgba(255,107,107,0.2); }
+
+/* 5. Français — 优雅衬线 */
+.card-5 {
+  background: linear-gradient(145deg, #1a1a1a, #2a1a0a);
+  border: 1px solid rgba(212,175,55,0.3);
+}
+.card-5 .greeting {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  color: #d4af37;
+  text-shadow: 0 0 15px rgba(212,175,55,0.3), 1px 1px 2px rgba(0,0,0,0.5);
+  letter-spacing: 0.2em;
+}
+.card-5:hover { box-shadow: 0 12px 40px rgba(212,175,55,0.15); }
+
+/* 6. Español — 热情似火 */
+.card-6 {
+  background: linear-gradient(145deg, #2d0a0a, #1a0a0a);
+  border: 1px solid rgba(255,100,50,0.3);
+}
+.card-6 .greeting {
+  font-family: 'Righteous', cursive;
+  font-size: 2.5rem;
+  color: #ff6b35;
+  text-shadow: 0 0 25px rgba(255,107,53,0.4), 0 0 50px rgba(255,107,53,0.2);
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+@keyframes pulseGlow {
+  0%, 100% { text-shadow: 0 0 20px rgba(255,107,53,0.3), 0 0 40px rgba(255,107,53,0.1); }
+  50% { text-shadow: 0 0 30px rgba(255,107,53,0.6), 0 0 60px rgba(255,107,53,0.3); }
+}
+.card-6:hover { box-shadow: 0 12px 40px rgba(255,107,53,0.2); }
+
+/* 7. Deutsch — 几何硬朗 */
+.card-7 {
+  background: linear-gradient(145deg, #1a1a2a, #0a0a1a);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.card-7 .greeting {
+  font-family: 'Silkscreen', monospace;
+  font-weight: 700;
+  color: #e0e0e0;
+  text-shadow: 3px 3px 0 #444, 6px 6px 0 rgba(0,0,0,0.3);
+  image-rendering: pixelated;
+  font-size: 1.8rem;
+}
+.card-7:hover { box-shadow: 0 12px 40px rgba(255,255,255,0.08); }
+
+/* 8. Italiano — 意大利斜体 */
+.card-8 {
+  background: linear-gradient(145deg, #1a2a1a, #0a1a1a);
+  border: 1px solid rgba(100,255,100,0.15);
+}
+.card-8 .greeting {
+  font-family: 'Dancing Script', cursive;
+  font-weight: 700;
+  font-style: italic;
+  color: #90ee90;
+  text-shadow: 0 0 20px rgba(144,238,144,0.3);
+  transform: rotate(-3deg);
+  font-size: 2.4rem;
+}
+.card-8:hover { box-shadow: 0 12px 40px rgba(144,238,144,0.12); }
+
+/* 9. Português — 清新暖阳 */
+.card-9 {
+  background: linear-gradient(145deg, #1a2a20, #0a1a15);
+  border: 1px solid rgba(255,200,100,0.2);
+}
+.card-9 .greeting {
+  font-family: 'Fredoka One', cursive;
+  color: #ffd93d;
+  text-shadow: 0 4px 0 #b8860b, 0 6px 10px rgba(0,0,0,0.3);
+  font-size: 2.2rem;
+}
+.card-9:hover { box-shadow: 0 12px 40px rgba(255,217,61,0.15); }
+
+/* 10. Русский — 斯拉夫力量 */
+.card-10 {
+  background: linear-gradient(145deg, #1a0a1a, #2a0a1a);
+  border: 1px solid rgba(200,50,80,0.25);
+}
+.card-10 .greeting {
+  font-family: 'Uncial Antiqua', serif;
+  font-weight: 700;
+  color: #dc143c;
+  text-shadow: 0 0 15px rgba(220,20,60,0.4), 2px 2px 0 #4a0000;
+  letter-spacing: 0.1em;
+  font-size: 1.6rem;
+}
+.card-10:hover { box-shadow: 0 12px 40px rgba(220,20,60,0.15); }
+
+/* 11. العربية — 阿拉伯花体 */
+.card-11 {
+  background: linear-gradient(145deg, #1a1a0a, #2a1a0a);
+  border: 1px solid rgba(255,215,0,0.2);
+}
+.card-11 .greeting {
+  font-family: 'Noto Naskh Arabic', serif;
+  font-weight: 700;
+  direction: rtl;
+  color: #ffd700;
+  text-shadow: 0 0 20px rgba(255,215,0,0.3);
+  font-size: 2.2rem;
+}
+.card-11:hover { box-shadow: 0 12px 40px rgba(255,215,0,0.12); }
+
+/* 12. हिन्दी — 天城文典雅 */
+.card-12 {
+  background: linear-gradient(145deg, #1a1a2a, #1a2a1a);
+  border: 1px solid rgba(200,150,255,0.2);
+}
+.card-12 .greeting {
+  font-family: 'Noto Serif Devanagari', serif;
+  font-weight: 700;
+  color: #c896ff;
+  text-shadow: 0 0 20px rgba(200,150,255,0.3);
+  font-size: 2rem;
+}
+.card-12:hover { box-shadow: 0 12px 40px rgba(200,150,255,0.12); }
+
+/* 13. ไทย — 泰式柔美 */
+.card-13 {
+  background: linear-gradient(145deg, #1a1a2e, #1a2a2e);
+  border: 1px solid rgba(100,200,255,0.2);
+}
+.card-13 .greeting {
+  font-family: 'Noto Sans Thai', sans-serif;
+  font-weight: 700;
+  color: #64c8ff;
+  text-shadow: 0 0 15px rgba(100,200,255,0.3);
+  letter-spacing: 0.05em;
+  font-size: 2rem;
+}
+.card-13:hover { box-shadow: 0 12px 40px rgba(100,200,255,0.12); }
+
+/* 14. Tiếng Việt — 轻盈飘动 */
+.card-14 {
+  background: linear-gradient(145deg, #0a1a2a, #1a2a3a);
+  border: 1px solid rgba(150,200,255,0.15);
+}
+.card-14 .greeting {
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  color: #96c8ff;
+  text-shadow: 0 0 15px rgba(150,200,255,0.3);
+  transform: rotate(-2deg);
+  font-size: 2.4rem;
+}
+.card-14:hover { box-shadow: 0 12px 40px rgba(150,200,255,0.1); }
+
+/* 15. Türkçe — 现代醒目 */
+.card-15 {
+  background: linear-gradient(145deg, #1a0a2a, #2a0a3a);
+  border: 1px solid rgba(255,100,200,0.2);
+}
+.card-15 .greeting {
+  font-family: 'Fira Sans', sans-serif;
+  font-weight: 900;
+  font-style: italic;
+  color: #ff64c8;
+  text-shadow: 0 0 20px rgba(255,100,200,0.3), 4px 4px 0 rgba(0,0,0,0.3);
+  font-size: 2.2rem;
+}
+.card-15:hover { box-shadow: 0 12px 40px rgba(255,100,200,0.12); }
+
+/* 16. Nederlands — 极简北欧 */
+.card-16 {
+  background: linear-gradient(145deg, #1a2a2a, #0a1a1a);
+  border: 1px solid rgba(200,255,200,0.12);
+}
+.card-16 .greeting {
+  font-family: 'Silkscreen', monospace;
+  font-weight: 700;
+  color: #c8ffc8;
+  text-shadow: none;
+  opacity: 0.85;
+  font-size: 1.6rem;
+}
+.card-16:hover { box-shadow: 0 12px 40px rgba(200,255,200,0.06); }
+
+/* 17. Polski — 刚劲有力 */
+.card-17 {
+  background: linear-gradient(145deg, #1a1a1a, #2a0a0a);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.card-17 .greeting {
+  font-family: 'Rubik Glitch', sans-serif;
+  color: #ff4444;
+  text-shadow: 2px 2px 0 #880000, -1px -1px 0 #440000;
+  font-size: 2rem;
+  letter-spacing: 0.08em;
+}
+.card-17:hover { box-shadow: 0 12px 40px rgba(255,68,68,0.12); }
+
+/* 18. Kiswahili — 非洲热情 */
+.card-18 {
+  background: linear-gradient(145deg, #1a2a0a, #2a1a0a);
+  border: 1px solid rgba(255,200,50,0.2);
+}
+.card-18 .greeting {
+  font-family: 'Rubik Bubbles', sans-serif;
+  color: #ffc832;
+  text-shadow: 0 0 20px rgba(255,200,50,0.4), 0 4px 0 #8b6914;
+  font-size: 2rem;
+}
+.card-18:hover { box-shadow: 0 12px 40px rgba(255,200,50,0.15); }
+
+/* 19. Ελληνικά — 古希腊风 */
+.card-19 {
+  background: linear-gradient(145deg, #0a1a2a, #1a2a3a);
+  border: 1px solid rgba(180,200,255,0.2);
+}
+.card-19 .greeting {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-style: italic;
+  color: #b4c8ff;
+  text-shadow: 0 0 25px rgba(180,200,255,0.3), 3px 3px 6px rgba(0,0,0,0.5);
+  font-size: 2.2rem;
+}
+.card-19:hover { box-shadow: 0 12px 40px rgba(180,200,255,0.12); }
+
+/* 20. עברית — 希伯来圣书 */
+.card-20 {
+  background: linear-gradient(145deg, #1a0a1a, #0a0a2a);
+  border: 1px solid rgba(150,150,255,0.2);
+}
+.card-20 .greeting {
+  font-family: 'Noto Serif Hebrew', serif;
+  font-weight: 700;
+  direction: rtl;
+  color: #9696ff;
+  text-shadow: 0 0 25px rgba(150,150,255,0.4), 0 0 50px rgba(150,150,255,0.2);
+  font-size: 2rem;
+}
+.card-20:hover { box-shadow: 0 12px 40px rgba(150,150,255,0.15); }
+
+/* ===== Card hover overlays ===== */
+.card-1::before { background: radial-gradient(circle at center, rgba(245,208,160,0.05), transparent 70%); }
+.card-2::before { background: radial-gradient(circle at center, rgba(79,172,254,0.05), transparent 70%); }
+.card-3::before { background: radial-gradient(circle at center, rgba(248,200,220,0.05), transparent 70%); }
+.card-4::before { background: radial-gradient(circle at center, rgba(255,107,107,0.05), transparent 70%); }
+.card-5::before { background: radial-gradient(circle at center, rgba(212,175,55,0.05), transparent 70%); }
+.card-6::before { background: radial-gradient(circle at center, rgba(255,107,53,0.05), transparent 70%); }
+.card-7::before { background: radial-gradient(circle at center, rgba(255,255,255,0.03), transparent 70%); }
+.card-8::before { background: radial-gradient(circle at center, rgba(144,238,144,0.05), transparent 70%); }
+.card-9::before { background: radial-gradient(circle at center, rgba(255,217,61,0.05), transparent 70%); }
+.card-10::before { background: radial-gradient(circle at center, rgba(220,20,60,0.05), transparent 70%); }
+.card-11::before { background: radial-gradient(circle at center, rgba(255,215,0,0.05), transparent 70%); }
+.card-12::before { background: radial-gradient(circle at center, rgba(200,150,255,0.05), transparent 70%); }
+.card-13::before { background: radial-gradient(circle at center, rgba(100,200,255,0.05), transparent 70%); }
+.card-14::before { background: radial-gradient(circle at center, rgba(150,200,255,0.05), transparent 70%); }
+.card-15::before { background: radial-gradient(circle at center, rgba(255,100,200,0.05), transparent 70%); }
+.card-16::before { background: radial-gradient(circle at center, rgba(200,255,200,0.03), transparent 70%); }
+.card-17::before { background: radial-gradient(circle at center, rgba(255,68,68,0.05), transparent 70%); }
+.card-18::before { background: radial-gradient(circle at center, rgba(255,200,50,0.05), transparent 70%); }
+.card-19::before { background: radial-gradient(circle at center, rgba(180,200,255,0.05), transparent 70%); }
+.card-20::before { background: radial-gradient(circle at center, rgba(150,150,255,0.05), transparent 70%); }
+
+/* ===== Footer ===== */
+footer {
+  text-align: center;
+  padding: 3rem 1rem 1rem;
+  color: rgba(255,255,255,0.25);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  body { padding: 1rem; }
+  header { padding: 2rem 0.5rem 2.5rem; }
+  .grid { grid-template-columns: 1fr; gap: 1rem; }
+  .card { min-height: 140px; padding: 1.5rem 1rem; }
+  .card-3 .greeting { writing-mode: horizontal-tb; }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌍 Hello World — 20 Languages</h1>
+  <p>二十种语言 · 二十种艺术字体</p>
+</header>
+
+<div class="grid">
+
+  <div class="card card-1">
+    <div class="greeting">你好</div>
+    <div class="lang-label">🇨🇳 中文 · Chinese</div>
+  </div>
+
+  <div class="card card-2">
+    <div class="greeting">Hello</div>
+    <div class="lang-label">🇬🇧 English</div>
+  </div>
+
+  <div class="card card-3">
+    <div class="greeting">こんにちは</div>
+    <div class="lang-label">🇯🇵 日本語 · Japanese</div>
+  </div>
+
+  <div class="card card-4">
+    <div class="greeting">안녕하세요</div>
+    <div class="lang-label">🇰🇷 한국어 · Korean</div>
+  </div>
+
+  <div class="card card-5">
+    <div class="greeting">Bonjour</div>
+    <div class="lang-label">🇫🇷 Français · French</div>
+  </div>
+
+  <div class="card card-6">
+    <div class="greeting">Hola</div>
+    <div class="lang-label">🇪🇸 Español · Spanish</div>
+  </div>
+
+  <div class="card card-7">
+    <div class="greeting">Hallo</div>
+    <div class="lang-label">🇩🇪 Deutsch · German</div>
+  </div>
+
+  <div class="card card-8">
+    <div class="greeting">Ciao</div>
+    <div class="lang-label">🇮🇹 Italiano · Italian</div>
+  </div>
+
+  <div class="card card-9">
+    <div class="greeting">Olá</div>
+    <div class="lang-label">🇵🇹 Português · Portuguese</div>
+  </div>
+
+  <div class="card card-10">
+    <div class="greeting">Здравствуйте</div>
+    <div class="lang-label">🇷🇺 Русский · Russian</div>
+  </div>
+
+  <div class="card card-11">
+    <div class="greeting">مرحبا</div>
+    <div class="lang-label">🇸🇦 العربية · Arabic</div>
+  </div>
+
+  <div class="card card-12">
+    <div class="greeting">नमस्ते</div>
+    <div class="lang-label">🇮🇳 हिन्दी · Hindi</div>
+  </div>
+
+  <div class="card card-13">
+    <div class="greeting">สวัสดี</div>
+    <div class="lang-label">🇹🇭 ไทย · Thai</div>
+  </div>
+
+  <div class="card card-14">
+    <div class="greeting">Xin chào</div>
+    <div class="lang-label">🇻🇳 Tiếng Việt · Vietnamese</div>
+  </div>
+
+  <div class="card card-15">
+    <div class="greeting">Merhaba</div>
+    <div class="lang-label">🇹🇷 Türkçe · Turkish</div>
+  </div>
+
+  <div class="card card-16">
+    <div class="greeting">Hallo</div>
+    <div class="lang-label">🇳🇱 Nederlands · Dutch</div>
+  </div>
+
+  <div class="card card-17">
+    <div class="greeting">Witaj</div>
+    <div class="lang-label">🇵🇱 Polski · Polish</div>
+  </div>
+
+  <div class="card card-18">
+    <div class="greeting">Habari</div>
+    <div class="lang-label">🇰🇪 Kiswahili · Swahili</div>
+  </div>
+
+  <div class="card card-19">
+    <div class="greeting">Γειά σου</div>
+    <div class="lang-label">🇬🇷 Ελληνικά · Greek</div>
+  </div>
+
+  <div class="card card-20">
+    <div class="greeting">שלום</div>
+    <div class="lang-label">🇮🇱 עברית · Hebrew</div>
+  </div>
+
+</div>
+
+<footer>🌏 20 Languages · 1 World</footer>
+
+</body>
+</html>
