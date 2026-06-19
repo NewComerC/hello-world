@@ -174,7 +174,7 @@
       "test_plan": "Playwright 模拟不同 userAgent 验证粒子数量正确。性能测试:运行 10 秒收集 FPS 数据验证 >= 30",
       "estimate": "0.5d",
       "risk": "medium",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T-006",
