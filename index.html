@@ -97,12 +97,12 @@
         
         // Configuration
         const CONFIG = {
-            desktopParticles: 12000,
+            desktopParticles: 10000,
             mobileParticles: 6000,
-            starfieldCount: 2000,
+            starfieldCount: 800,
             arms: 3,
             armSpread: 0.5,
-            rotationSpeed: 0.0005,
+            rotationSpeed: 0.0002,
             galaxyRadius: 80,
             bulgeRadius: 8
         };
@@ -126,11 +126,11 @@
         
         // Renderer setup
         const renderer = new THREE.WebGLRenderer({ 
-            antialias: true,
+            antialias: false,
             powerPreference: 'high-performance'
         });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
         renderer.setClearColor(0x000000, 1);
         document.getElementById('canvas-container').appendChild(renderer.domElement);
         
@@ -236,6 +236,9 @@
         }
         
         window.scene = scene;
+        window.camera = camera;
+        window.renderer = renderer;
+        window.controls = controls;
         window.generateGalaxy = generateGalaxy;
         
         // Starfield background
@@ -320,14 +323,17 @@
         // Start animation
         animate();
         
-        // Handle resize
-        function onResize() {
+        function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
         
-        window.addEventListener('resize', onResize);
+        window.animate = animate;
+        window.onWindowResize = onWindowResize;
+        window.updateFPS = updateFPS;
+        
+        window.addEventListener('resize', onWindowResize);
         
         // Cleanup on page unload
         window.addEventListener('beforeunload', () => {

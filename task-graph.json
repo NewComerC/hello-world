@@ -111,7 +111,7 @@
       "test_plan": "Playwright 测试:1) 模拟拖拽后检查 camera 位置变化 2) 模拟 resize 检查 canvas 尺寸 3) 连续运行 10 秒截图验证 FPS 显示",
       "estimate": "0.5d",
       "risk": "low",
-      "status": "tests_ready"
+      "status": "review"
     },
     {
       "id": "T-004",
