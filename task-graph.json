@@ -43,7 +43,7 @@
       "test_plan": "Playwright 测试:1) 页面加载成功 2) 控制台无 error 级别日志 3) canvas 元素存在且尺寸为全屏",
       "estimate": "0.5d",
       "risk": "low",
-      "status": "blocked"
+      "status": "tests_ready"
     },
     {
       "id": "T-002",
