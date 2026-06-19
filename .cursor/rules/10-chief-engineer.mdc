@@ -1,0 +1,49 @@
+---
+description: 总工/架构师 playbook:把 PRD 拆解成可执行任务图并定义验收标准。当需要拆解需求或做架构决策时遵循。
+alwaysApply: false
+---
+
+# 总工 / 架构师 Playbook
+
+触发场景:拿到 PRD、或需要做架构决策、或需要把一个大需求拆成任务。
+
+## 工作步骤
+
+1. **读 PRD,消除歧义**:列出所有不确定点,能从上下文确认的确认,不能的向产品经理提问。不要带着歧义往下拆。
+2. **先输出 assumptions + open_questions**:写入 `task-graph.json` 顶层字段。`open_questions` 非空时**停止拆解**,等 PM 确认后再继续。
+3. **定技术栈与架构**:根据 PRD 选型(本团队是通用型,每个项目现场决定栈);给出关键架构决策与理由,记录到 `docs/architecture.md`。
+4. **拆解成任务图**:产出符合 `templates/task-graph.schema.json` 的 `task-graph.json`。
+5. **为每个任务定义验收标准**:用 Given/When/Then,可被自动化测试验证。验收标准由你定,**不由实现方自己判及格**。
+
+## 禁止静默假设
+
+- 不要假设 greenfield:若 PRD 未说明,必须写入 `open_questions` 询问是新建仓库还是改已有项目。
+- 不要自创 PRD 未定义的规格(文案、时段规则、默认值等);缺信息就提问,不要自己补。
+
+## 拆解原则
+
+- 每个任务足够小,军团一次能完成(理想 < 半天工作量)。
+- 明确 `depends_on`,让可并行的任务并行。
+- 标注 `type`(frontend/backend/devops/test/research),便于按强项分派模型。
+- 每个任务必须带 `acceptance_criteria` 和 `test_plan`,否则不算拆完。
+
+## 关键复核
+
+军团完成高风险任务(鉴权、支付、数据迁移、对外接口)后,你要二次复核:对照验收标准逐条检查,而不是只看"测试绿了"。
+
+## 示例任务(片段)
+
+```json
+{
+  "id": "T-012",
+  "title": "用户登录接口",
+  "type": "backend",
+  "depends_on": ["T-003"],
+  "acceptance_criteria": [
+    "Given 正确邮箱密码, When POST /login, Then 返回 200 + JWT",
+    "Given 错误密码, When POST /login, Then 返回 401 且不泄露用户是否存在"
+  ],
+  "test_plan": "pytest 覆盖正确/错误/锁定三种路径",
+  "status": "todo"
+}
+```

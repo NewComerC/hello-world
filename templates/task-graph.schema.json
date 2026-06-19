@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TaskGraph",
+  "description": "总工把 PRD 拆解成的可执行任务图。军团据此实现,编排器据此调度。",
+  "type": "object",
+  "required": ["prd_ref", "assumptions", "open_questions", "tasks"],
+  "properties": {
+    "prd_ref": {
+      "type": "string",
+      "description": "对应 PRD 的标识或文件路径"
+    },
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "总工拆解时的显式假设(如 greenfield vs 已有仓库)"
+    },
+    "open_questions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "需产品经理确认的问题;非空时编排器暂停迭代"
+    },
+    "stack": {
+      "type": "object",
+      "description": "本项目技术栈选型(由总工现场决定)",
+      "properties": {
+        "frontend": { "type": "string" },
+        "backend": { "type": "string" },
+        "database": { "type": "string" },
+        "infra": { "type": "string" }
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "type", "acceptance_criteria", "interface_contract", "test_plan", "status"],
+        "properties": {
+          "id": { "type": "string", "description": "如 T-001" },
+          "title": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": ["frontend", "backend", "devops", "test", "research", "docs"]
+          },
+          "description": { "type": "string" },
+          "depends_on": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "依赖的任务 id;无依赖则空数组,可并行"
+          },
+          "acceptance_criteria": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1,
+            "description": "Given/When/Then,可被自动化测试验证"
+          },
+          "interface_contract": {
+            "type": "object",
+            "description": "接口契约:QA 据此在实现不存在时写黑盒测试,研发据此实现。契约变更只能由总工经升级修改。",
+            "properties": {
+              "kind": { "type": "string", "description": "如 http / function / cli / ui" },
+              "endpoint": { "type": "string" },
+              "signature": { "type": "string", "description": "函数/方法签名(kind=function 时)" },
+              "request": { "type": "object" },
+              "response_ok": { "type": "object" },
+              "response_err": { "type": "object" },
+              "data_shape": { "type": "object" },
+              "files": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "实现涉及的源码文件路径"
+              }
+            }
+          },
+          "qa_brief": {
+            "type": "string",
+            "description": "给测试的简报:关注哪些边界/风险"
+          },
+          "dev_brief": {
+            "type": "string",
+            "description": "给研发的简报:实现要点/约束"
+          },
+          "test_plan": {
+            "type": "string",
+            "description": "如何测试这条任务(框架/路径/用例)"
+          },
+          "estimate": {
+            "type": "string",
+            "description": "粗估工作量,如 0.5d"
+          },
+          "risk": {
+            "type": "string",
+            "enum": ["low", "medium", "high"],
+            "description": "high 风险任务需总工关键复核"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["todo", "tests_ready", "in_progress", "review", "done", "blocked"],
+            "description": "todo→(QA)tests_ready→(研发)in_progress→(门禁)review→(人)done;遇阻 blocked"
+          }
+        }
+      }
+    }
+  }
+}
