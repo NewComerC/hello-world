@@ -213,7 +213,7 @@
       "test_plan": "npx playwright test --reporter=list 全绿通过。CI 集成验证",
       "estimate": "1d",
       "risk": "medium",
-      "status": "blocked"
+      "status": "todo"
     },
     {
       "id": "T-007",
