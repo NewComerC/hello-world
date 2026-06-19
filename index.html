@@ -143,106 +143,100 @@
         controls.maxDistance = 200;
         controls.enablePan = false;
         
-        // Galaxy colors
-        const colors = {
-            center: new THREE.Color(0xffaa00),
-            mid1: new THREE.Color(0xff6600),
-            mid2: new THREE.Color(0x4488ff),
-            edge: new THREE.Color(0x8822ff)
-        };
+        let galaxyRef = null;
+        let haloRef = null;
         
-        // Generate galaxy geometry
-        function createGalaxy() {
+        // Generate particle galaxy: 3-arm logarithmic spiral with warm-to-cool gradient
+        function generateGalaxy(scene, particleCount) {
+            if (!scene) {
+                return null;
+            }
+            
+            const count = Math.max(0, Math.floor(Number(particleCount) || 0));
+            
+            if (galaxyRef) {
+                scene.remove(galaxyRef);
+                galaxyRef.geometry.dispose();
+                galaxyRef.material.dispose();
+                galaxyRef = null;
+            }
+            if (haloRef) {
+                scene.remove(haloRef);
+                if (haloRef.geometry) haloRef.geometry.dispose();
+                if (haloRef.material) haloRef.material.dispose();
+                haloRef = null;
+            }
+            
+            if (count === 0) {
+                return null;
+            }
+            
             const geometry = new THREE.BufferGeometry();
-            const positions = new Float32Array(particleCount * 3);
-            const colors = new Float32Array(particleCount * 3);
-            const sizes = new Float32Array(particleCount);
+            const positions = new Float32Array(count * 3);
+            const colors = new Float32Array(count * 3);
+            const sizes = new Float32Array(count);
             
-            const colorCenter = new THREE.Color(0xffaa00);
-            const colorMid = new THREE.Color(0xff6600);
-            const colorEdge1 = new THREE.Color(0x4488ff);
-            const colorEdge2 = new THREE.Color(0x8822ff);
+            const armOffset = (Math.PI * 2) / CONFIG.arms;
+            const spiralB = 0.12;
+            const particleColor = new THREE.Color();
             
-            for (let i = 0; i < particleCount; i++) {
-                // Spiral parameters
+            for (let i = 0; i < count; i++) {
+                const radialT = 1 - (i / Math.max(count - 1, 1));
                 const armIndex = i % CONFIG.arms;
-                const armAngle = (armIndex / CONFIG.arms) * Math.PI * 2;
+                const armAngle = armIndex * armOffset;
                 
-                // Logarithmic spiral: r = a * e^(b * theta)
-                const t = Math.random();
-                const radius = t * CONFIG.galaxyRadius;
-                const spiralTightness = 0.3;
-                const angle = armAngle + radius * spiralTightness + (Math.random() - 0.5) * CONFIG.armSpread;
+                const radius = radialT * CONFIG.galaxyRadius + Math.random() * 1.5;
+                const theta = Math.log(Math.max(radius, 0.5)) / spiralB + armAngle;
+                const scatter = radius * 0.12;
                 
-                // Add some randomness to make it look more natural
-                const scatter = radius * 0.15;
-                const x = Math.cos(angle) * radius + (Math.random() - 0.5) * scatter;
-                const z = Math.sin(angle) * radius + (Math.random() - 0.5) * scatter;
-                
-                // Vertical distribution (thinner disk at edges)
-                const verticalSpread = (1 - t * 0.7) * 4;
+                const x = Math.cos(theta) * radius + (Math.random() - 0.5) * scatter;
+                const z = Math.sin(theta) * radius + (Math.random() - 0.5) * scatter;
+                const verticalSpread = (1 - radialT * 0.7) * 4;
                 const y = (Math.random() - 0.5) * verticalSpread * 2;
                 
                 positions[i * 3] = x;
                 positions[i * 3 + 1] = y;
                 positions[i * 3 + 2] = z;
                 
-                // Color gradient based on distance from center
-                const normalizedRadius = radius / CONFIG.galaxyRadius;
-                const particleColor = new THREE.Color();
-                
-                if (normalizedRadius < 0.3) {
-                    // Center: warm yellow-orange
-                    const localT = normalizedRadius / 0.3;
-                    particleColor.copy(colorCenter).lerp(colorMid, localT);
-                } else if (normalizedRadius < 0.7) {
-                    // Mid: orange to blue
-                    const localT = (normalizedRadius - 0.3) / 0.4;
-                    particleColor.copy(colorMid).lerp(colorEdge1, localT);
-                } else {
-                    // Edge: blue to purple
-                    const localT = (normalizedRadius - 0.7) / 0.3;
-                    particleColor.copy(colorEdge1).lerp(colorEdge2, localT);
-                }
-                
-                // Add slight color variation
-                particleColor.r += (Math.random() - 0.5) * 0.1;
-                particleColor.g += (Math.random() - 0.5) * 0.1;
-                particleColor.b += (Math.random() - 0.5) * 0.1;
-                
+                const hue = (40 + radialT * 210) / 360;
+                particleColor.setHSL(hue, 0.85 + Math.random() * 0.1, 0.45 + radialT * 0.15);
                 colors[i * 3] = particleColor.r;
                 colors[i * 3 + 1] = particleColor.g;
                 colors[i * 3 + 2] = particleColor.b;
                 
-                // Size: larger near center, smaller at edges
-                const centerBoost = Math.max(0, 1 - normalizedRadius * 2) * 0.5;
-                const baseSize = 0.02 + Math.random() * 0.13;
-                sizes[i] = baseSize + centerBoost;
+                const centerBoost = Math.max(0, 1 - radialT * 2) * 0.5;
+                sizes[i] = 0.5 + Math.random() * 1.5 + centerBoost;
             }
             
             geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
             geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
             geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
             
-            return geometry;
+            const material = new THREE.PointsMaterial({
+                size: 1,
+                vertexColors: true,
+                sizeAttenuation: true,
+                transparent: true,
+                opacity: 0.9,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            
+            const particles = new THREE.Points(geometry, material);
+            particles.userData.isGalaxy = true;
+            scene.add(particles);
+            galaxyRef = particles;
+            
+            const coreLight = new THREE.PointLight(0xffaa44, 2.5, 60);
+            coreLight.position.set(0, 0, 0);
+            scene.add(coreLight);
+            haloRef = coreLight;
+            
+            return particles;
         }
         
-        // Create galaxy mesh
-        const galaxyGeometry = createGalaxy();
-        
-        // Custom shader material for better control
-        const galaxyMaterial = new THREE.PointsMaterial({
-            size: 1,
-            vertexColors: true,
-            sizeAttenuation: true,
-            transparent: true,
-            opacity: 0.9,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
-        });
-        
-        const galaxy = new THREE.Points(galaxyGeometry, galaxyMaterial);
-        scene.add(galaxy);
+        window.scene = scene;
+        window.generateGalaxy = generateGalaxy;
         
         // Starfield background
         function createStarfield() {
@@ -281,20 +275,7 @@
         const starfield = new THREE.Points(starfieldGeometry, starfieldMaterial);
         scene.add(starfield);
         
-        // Core glow
-        const coreGeometry = new THREE.SphereGeometry(3, 32, 32);
-        const coreMaterial = new THREE.MeshBasicMaterial({
-            color: 0xffaa00,
-            transparent: true,
-            opacity: 0.3
-        });
-        const core = new THREE.Mesh(coreGeometry, coreMaterial);
-        scene.add(core);
-        
-        // Point light at center
-        const coreLight = new THREE.PointLight(0xffaa00, 2, 50);
-        coreLight.position.set(0, 0, 0);
-        scene.add(coreLight);
+        const galaxy = generateGalaxy(scene, particleCount);
         
         // Ambient light
         const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
@@ -324,9 +305,9 @@
         function animate() {
             animationId = requestAnimationFrame(animate);
             
-            // Rotate galaxy
-            galaxy.rotation.y += CONFIG.rotationSpeed;
-            core.rotation.y += CONFIG.rotationSpeed * 0.5;
+            if (galaxyRef) {
+                galaxyRef.rotation.y += CONFIG.rotationSpeed;
+            }
             
             // Slowly rotate starfield in opposite direction
             starfield.rotation.y -= CONFIG.rotationSpeed * 0.1;
@@ -351,12 +332,12 @@
         // Cleanup on page unload
         window.addEventListener('beforeunload', () => {
             cancelAnimationFrame(animationId);
-            galaxyGeometry.dispose();
-            galaxyMaterial.dispose();
+            if (galaxyRef) {
+                galaxyRef.geometry.dispose();
+                galaxyRef.material.dispose();
+            }
             starfieldGeometry.dispose();
             starfieldMaterial.dispose();
-            coreGeometry.dispose();
-            coreMaterial.dispose();
             renderer.dispose();
         });
     </script>

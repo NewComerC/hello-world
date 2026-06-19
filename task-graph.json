@@ -76,7 +76,7 @@
       "test_plan": "Playwright 截图对比:星系渲染结果与参考图结构一致。控制台无 WebGL 性能警告",
       "estimate": "1d",
       "risk": "medium",
-      "status": "tests_ready"
+      "status": "review"
     },
     {
       "id": "T-003",
