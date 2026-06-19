@@ -1,0 +1,254 @@
+{
+  "prd_ref": "prd/PRD.md",
+  "assumptions": [
+    "Greenfield 项目:从零创建新仓库，无现有代码需要兼容",
+    "输出位置:index.html 位于仓库根目录，可通过 python3 -m http.server 8080 直接访问",
+    "CDN 选择:Three.js 和 OrbitControls 从 unpkg CDN 加载（兼容性好）",
+    "测试框架:使用 Playwright 进行自动化验收测试（含截图对比）",
+    "浏览器兼容性:目标为现代 Chrome/Firefox/Safari，ES6+ 语法",
+    "目录结构:单文件 HTML，无构建工具，无分离的 CSS/JS 文件"
+  ],
+  "open_questions": [],
+  "stack": {
+    "frontend": "Three.js (CDN) + 原生 HTML/CSS/JS",
+    "backend": "无",
+    "database": "无",
+    "infra": "静态文件服务器 (python3 -m http.server)"
+  },
+  "tasks": [
+    {
+      "id": "T-001",
+      "title": "HTML 框架 + Three.js 场景初始化",
+      "type": "frontend",
+      "description": "创建单文件 index.html，从 CDN 加载 Three.js 和 OrbitControls，初始化场景、相机、渲染器，设置全屏黑色背景",
+      "depends_on": [],
+      "acceptance_criteria": [
+        "Given 打开 index.html，When 页面加载完成，Then 显示全屏黑色背景无报错",
+        "Given 页面已加载，When 检查网络请求，Then 成功从 CDN 加载 three.min.js 和 OrbitControls.js",
+        "Given 场景已初始化，When 检查控制台，Then 无 Three.js 相关错误"
+      ],
+      "interface_contract": {
+        "kind": "ui",
+        "files": [
+          "index.html"
+        ],
+        "data_shape": {
+          "scene": "THREE.Scene 实例",
+          "camera": "THREE.PerspectiveCamera 实例",
+          "renderer": "THREE.WebGLRenderer 实例"
+        }
+      },
+      "dev_brief": "使用 unpkg CDN: https://unpkg.com/three@0.160.0/build/three.min.js 和 https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js。注意 ES6 module 导入方式。设置 renderer.setSize(window.innerWidth, window.innerHeight) 和 scene.background = new THREE.Color(0x000000)",
+      "qa_brief": "验证 CDN 加载成功，控制台无 404 或 CORS 错误，场景背景为纯黑",
+      "test_plan": "Playwright 测试:1) 页面加载成功 2) 控制台无 error 级别日志 3) canvas 元素存在且尺寸为全屏",
+      "estimate": "0.5d",
+      "risk": "low",
+      "status": "blocked"
+    },
+    {
+      "id": "T-002",
+      "title": "粒子星系生成（3条旋臂）",
+      "type": "frontend",
+      "description": "使用 BufferGeometry + Points 创建粒子星系，实现 3 条旋臂的对数螺旋分布，颜色从中心暖色渐变到边缘冷色，中心有柔和光晕",
+      "depends_on": [
+        "T-001"
+      ],
+      "acceptance_criteria": [
+        "Given 场景已初始化，When 生成星系，Then 渲染 8000-15000 个粒子（桌面端）",
+        "Given 粒子已生成，When 观察分布，Then 可见 3 条清晰螺旋臂",
+        "Given 观察颜色，When 从中心到边缘，Then 颜色从暖色(橙/红)渐变到冷色(蓝/紫)",
+        "Given 观察中心，When 页面加载完成，Then 中心存在柔和光晕效果"
+      ],
+      "interface_contract": {
+        "kind": "function",
+        "signature": "function generateGalaxy(scene, particleCount)",
+        "files": [
+          "index.html"
+        ],
+        "data_shape": {
+          "particles": "THREE.Points 实例",
+          "geometry": "THREE.BufferGeometry 含 position/color/size 属性",
+          "material": "THREE.PointsMaterial 含 vertexColors:true"
+        }
+      },
+      "dev_brief": "螺旋公式: r = a * exp(b * θ)，3 条旋臂角度偏移 2π/3。颜色渐变使用 HSL: 中心 hue=30-50(暖)，边缘 hue=220-280(冷)。光晕可用半透明 Sprite 或 PointLight 实现。粒子大小随机 0.5-2.0",
+      "qa_brief": "关注性能:BufferGeometry 是否正确使用，draw calls 是否最小化。验证旋臂数量准确为 3",
+      "test_plan": "Playwright 截图对比:星系渲染结果与参考图结构一致。控制台无 WebGL 性能警告",
+      "estimate": "1d",
+      "risk": "medium",
+      "status": "todo"
+    },
+    {
+      "id": "T-003",
+      "title": "动画循环 + 交互控制",
+      "type": "frontend",
+      "description": "实现星系自转动画，OrbitControls 鼠标拖拽旋转和滚轮缩放，FPS 计数器，响应式 resize，移动端 touch 支持",
+      "depends_on": [
+        "T-001",
+        "T-002"
+      ],
+      "acceptance_criteria": [
+        "Given 页面运行中，When 观察动画，Then 星系持续缓慢自转且帧率 > 30fps",
+        "Given 鼠标拖拽，When 移动鼠标，Then 视角随之旋转",
+        "Given 滚轮操作，When 上下滚动，Then 相机远近缩放",
+        "Given 窗口 resize，When 改变浏览器尺寸，Then 画布自适应全屏",
+        "Given 观察 UI，When 页面运行，Then 右下角显示实时 FPS 计数器",
+        "Given 移动端访问，When 触摸拖拽，Then 视角正常旋转"
+      ],
+      "interface_contract": {
+        "kind": "function",
+        "signature": "function animate(), function onWindowResize(), function updateFPS()",
+        "files": [
+          "index.html"
+        ],
+        "data_shape": {
+          "controls": "OrbitControls 实例，enableDamping=true",
+          "animationId": "requestAnimationFrame 返回值，用于清理"
+        }
+      },
+      "dev_brief": "自转:galaxy.rotation.y += 0.0002。FPS 计算:每帧累加，每秒更新 DOM。resize:更新 camera.aspect 和 renderer.setSize。移动端:OrbitControls 默认支持 touch。阻尼效果使交互更流畅",
+      "qa_brief": "验证无内存泄漏:切换 tab 后返回，动画仍正常。验证 touch 事件在移动端正常工作",
+      "test_plan": "Playwright 测试:1) 模拟拖拽后检查 camera 位置变化 2) 模拟 resize 检查 canvas 尺寸 3) 连续运行 10 秒截图验证 FPS 显示",
+      "estimate": "0.5d",
+      "risk": "low",
+      "status": "todo"
+    },
+    {
+      "id": "T-004",
+      "title": "UI 信息叠加层",
+      "type": "frontend",
+      "description": "实现半透明 UI 层:左下角标题「🌌 Hello World — Three.js 星系」，底部提示「🖱 拖动旋转 · 滚轮缩放 · 点击任意位置」，右下角 FPS 计数器",
+      "depends_on": [
+        "T-001"
+      ],
+      "acceptance_criteria": [
+        "Given 页面加载完成，When 观察左下角，Then 显示「🌌 Hello World — Three.js 星系」",
+        "Given 页面加载完成，When 观察底部中央，Then 显示「🖱 拖动旋转 · 滚轮缩放 · 点击任意位置」",
+        "Given 页面运行中，When 观察右下角，Then 显示实时 FPS 数值",
+        "Given UI 元素，When 观察样式，Then 所有文字半透明不遮挡星系"
+      ],
+      "interface_contract": {
+        "kind": "ui",
+        "files": [
+          "index.html"
+        ],
+        "data_shape": {
+          "titleElement": "绝对定位 div，bottom:20px, left:20px",
+          "hintElement": "绝对定位 div，bottom:20px, center",
+          "fpsElement": "绝对定位 div，top:20px, right:20px"
+        }
+      },
+      "dev_brief": "使用 CSS position:absolute，pointer-events:none 让点击穿透到 canvas。文字颜色 rgba(255,255,255,0.7) 或 #aaa。字体使用系统默认 sans-serif。FPS 通过 requestAnimationFrame 计数更新",
+      "qa_brief": "验证 UI 在不同屏幕尺寸下位置正确，文字清晰可读，无重叠",
+      "test_plan": "Playwright 截图对比:UI 渲染符合设计。验证 DOM 中三个 UI 元素存在且文字内容正确",
+      "estimate": "0.5d",
+      "risk": "low",
+      "status": "todo"
+    },
+    {
+      "id": "T-005",
+      "title": "性能自适应 + 移动端优化",
+      "type": "frontend",
+      "description": "根据设备性能自适应粒子数量（桌面 8000-15000，移动端 4000-6000），确保流畅运行",
+      "depends_on": [
+        "T-002",
+        "T-003"
+      ],
+      "acceptance_criteria": [
+        "Given 桌面端访问，When 检测性能，Then 粒子数量 >= 8000",
+        "Given 移动端访问，When 检测性能，Then 粒子数量在 4000-6000 范围",
+        "Given 任何设备，When 运行 10 秒，Then 平均 FPS >= 30"
+      ],
+      "interface_contract": {
+        "kind": "function",
+        "signature": "function getOptimalParticleCount(), function isMobile()",
+        "files": [
+          "index.html"
+        ],
+        "data_shape": {
+          "particleCount": "数字，根据 userAgent/touch 支持动态计算"
+        }
+      },
+      "dev_brief": "检测逻辑:检查 navigator.userAgent 中是否包含 Mobile/Android/iOS，或检查 navigator.maxTouchPoints > 0。桌面默认 10000 粒子，移动端默认 5000。预留动态调整接口",
+      "qa_brief": "需在真实移动设备和桌面浏览器分别测试。关注低端安卓机的表现",
+      "test_plan": "Playwright 模拟不同 userAgent 验证粒子数量正确。性能测试:运行 10 秒收集 FPS 数据验证 >= 30",
+      "estimate": "0.5d",
+      "risk": "medium",
+      "status": "todo"
+    },
+    {
+      "id": "T-006",
+      "title": "Playwright 自动化验收测试",
+      "type": "test",
+      "description": "编写 Playwright 测试套件，覆盖页面加载、控制台错误检查、截图对比、交互模拟、FPS 检测",
+      "depends_on": [],
+      "acceptance_criteria": [
+        "Given 运行测试，When 执行完成，Then 所有测试用例通过",
+        "Given 页面加载测试，When 执行，Then 验证 index.html 可访问且无 404",
+        "Given 控制台检查，When 执行，Then 验证无 error/warning 级别日志",
+        "Given 截图测试，When 执行，Then 星系渲染结果与基准图匹配度 > 95%",
+        "Given 交互测试，When 执行，Then 模拟拖拽后 camera 位置发生变化"
+      ],
+      "interface_contract": {
+        "kind": "cli",
+        "endpoint": "npm test 或 npx playwright test",
+        "files": [
+          "tests/galaxy.spec.js",
+          "playwright.config.js"
+        ],
+        "data_shape": {
+          "testFiles": [
+            "galaxy.spec.js"
+          ],
+          "coverage": [
+            "加载",
+            "控制台",
+            "截图",
+            "交互"
+          ]
+        }
+      },
+      "dev_brief": "Playwright 配置:使用 webServer 启动 python3 -m http.server。截图对比使用 toMatchSnapshot 或 pixelmatch。测试用例:1) 页面加载 2) 控制台无错 3) 截图对比 4) 拖拽交互 5) FPS 检测。使用 page.evaluate 获取 WebGL 信息",
+      "qa_brief": "测试需覆盖 Chrome/Firefox/WebKit。截图阈值设为 0.05 允许轻微差异",
+      "test_plan": "npx playwright test --reporter=list 全绿通过。CI 集成验证",
+      "estimate": "1d",
+      "risk": "medium",
+      "status": "todo"
+    },
+    {
+      "id": "T-007",
+      "title": "质量门禁 - 人工终验",
+      "type": "test",
+      "description": "人工验收:视觉效果检查、跨浏览器验证、移动端真机测试、部署验证",
+      "depends_on": [
+        "T-001",
+        "T-002",
+        "T-003",
+        "T-004",
+        "T-005",
+        "T-006"
+      ],
+      "acceptance_criteria": [
+        "Given 人工检查，When 观察星系，Then 3 条螺旋臂清晰可见，颜色渐变自然",
+        "Given 人工操作，When 拖拽/缩放，Then 交互流畅无卡顿",
+        "Given 人工检查，When 查看 UI，Then 所有文案正确显示为中文",
+        "Given 部署验证，When 执行 python3 -m http.server 8080，Then 可通过 http://localhost:8080 正常访问"
+      ],
+      "interface_contract": {
+        "kind": "ui",
+        "files": [
+          "index.html"
+        ],
+        "data_shape": {
+          "checklist": "人工验收清单"
+        }
+      },
+      "dev_brief": "人工验收项:1) 视觉效果 2) 交互流畅度 3) UI 文案准确性 4) 跨浏览器兼容性 5) 部署验证",
+      "qa_brief": "需在 Chrome/Firefox/Safari 最新版验证。移动端使用 iOS Safari 和 Chrome Android 测试",
+      "test_plan": "人工执行:1) 桌面端验收 2) 移动端验收 3) 部署测试 4) 最终签字",
+      "estimate": "0.5d",
+      "risk": "low",
+      "status": "todo"
+    }
+  ]
+}
