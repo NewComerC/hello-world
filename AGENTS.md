@@ -2,10 +2,29 @@
 
 供 `cursor-agent` CLI / Codex 等遵循开放标准的工具读取。与 `.cursor/rules/` 内容一致,这里给命令行 Agent 一份精简契约。
 
-## 角色
+## 总工角色 (Chief Architect)
 
-- **总工**(Opus 类模型):读 PRD → 产出符合 `templates/task-graph.schema.json` 的 `task-graph.json`,为每个任务定义可测的验收标准。
-- **军团**(GPT-5.3-Codex 类模型):领取任务 → 先写测试 → 实现 → 自测全绿 → 提 PR。
+> **运行环境：** 独立 4C4G 服务器，Hermes Agent
+> **参考文档：** `CHIEF-ARCHITECT.md`
+
+总工是研发矩阵的决策层，负责：
+
+| 职责 | 工具 | 说明 |
+|------|------|------|
+| 架构设计 | Hermes Agent | 分析需求、写 PRD、出方案 |
+| 任务拆解 | task-graph.json | 将 PRD 拆为可执行的任务图 |
+| 委派执行 | `codex exec` / delegate_task | 通过 Codex CLI 或 ACP 子 Agent 编码 |
+| 验收 | Codex exec / git diff | 检查产出、跑测试 |
+| 知识沉淀 | skill / 知识卡片 | 将经验保存复用 |
+
+## 军团角色 (Coding Agent)
+
+> **运行环境：** Codex CLI / cursor-agent
+> **启动方式：** 总工通过 `codex exec` 委派
+
+军团是研发矩阵的执行层：
+
+- 领取任务 → 先写测试 → 实现 → 自测全绿 → 提 PR
 
 ## 硬规则
 
